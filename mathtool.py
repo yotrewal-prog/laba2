@@ -1,4 +1,4 @@
-"""mathtool.py — решение уравнений вида A*x^2 + B*x + C = 0.
+"""mathtool.py — точка входа приложения mathtool.
 
 Использование:
     python mathtool.py                          вывод справки
@@ -13,18 +13,7 @@
 import sys
 
 from calc import equation
-
-HELP_TEXT = (
-    "mathtool — решение уравнений вида A*x^2 + B*x + C = 0\n"
-    "\n"
-    "Использование:\n"
-    "    python mathtool.py                          вывод справки\n"
-    "    python mathtool.py --help                    вывод справки\n"
-    "    python mathtool.py solve                     ввод коэффициентов с клавиатуры\n"
-    "    python mathtool.py solve -a 1 -b -3 -c 2      решение с заданными коэффициентами\n"
-    "\n"
-    "Коэффициенты A, B, C — целые числа, по модулю не превышающие 10000."
-)
+from cli import build_parser
 
 
 def print_error(message):
@@ -45,36 +34,18 @@ def read_coefficients_from_keyboard():
     return coefficients
 
 
-def parse_arguments(argv):
-    """Разбор параметров командной строки.
-    Возвращает словарь коэффициентов уравнения."""
-    # Параметров нет или запрошена справка
-    if len(argv) == 0 or argv[0] == "--help":
-        print(HELP_TEXT)
-        sys.exit(0)
+def get_coefficients(args):
+    """Получает коэффициенты уравнения из параметров или с клавиатуры.
 
-    # Первая команда должна быть "solve"
-    if argv[0] != "solve":
-        raise ValueError(f"неизвестная команда \"{argv[0]}\"")
-
-    # Только "solve" — коэффициенты вводятся с клавиатуры
-    if len(argv) == 1:
+    Возвращает словарь вида {"A": значение, "B": значение, "C": значение}.
+    """
+    coefficients = {"A": args.a, "B": args.b, "C": args.c}
+    if all(value is None for value in coefficients.values()):
+        # Ни одного параметра: значения запрашиваются с клавиатуры
         return read_coefficients_from_keyboard()
-
-    # "solve -a .. -b .. -c .." — коэффициенты заданы параметрами
-    if len(argv) == 7:
-        if argv[1] != "-a" or argv[3] != "-b" or argv[5] != "-c":
-            raise ValueError("неизвестный параметр")
-        coefficients = {"A": argv[2], "B": argv[4], "C": argv[6]}
-    else:
-        # Любой другой набор параметров считается неверным
-        raise ValueError("неверный набор параметров")
-
-    for name, text in coefficients.items():
-        try:
-            coefficients[name] = int(text)
-        except ValueError:
-            raise ValueError("коэффициент не является целым числом") from None
+    if any(value is None for value in coefficients.values()):
+        # Задана только часть коэффициентов: это неверный набор данных
+        raise ValueError("укажите все три коэффициента либо ни одного")
     return coefficients
 
 
@@ -93,10 +64,22 @@ def print_solution(kind, discriminant, roots):
 
 
 def main():
-    # 1. Разбор параметров командной строки, получение исходных данных
-    # 2. Решение уравнения в модуле calc
+    # 1. Разбор параметров командной строки
+    parser = build_parser()
+    args = parser.parse_args(sys.argv[1:])
+
+    # Команда не указана — вывод справки
+    if args.command is None:
+        parser.print_help()
+        sys.exit(0)
+
+    if args.command != "solve":
+        print_error(f"ОШИБКА: команда \"{args.command}\" ещё не реализована")
+        sys.exit(1)
+
+    # 2. Получение исходных данных, проверка данных, вызов расчёта
     try:
-        coefficients = parse_arguments(sys.argv[1:])
+        coefficients = get_coefficients(args)
         equation.validate_coefficients(coefficients)
         kind, discriminant, roots = equation.solve(
             coefficients["A"], coefficients["B"], coefficients["C"]
