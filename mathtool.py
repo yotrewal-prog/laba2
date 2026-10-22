@@ -190,14 +190,9 @@ def main(argv):
         parser.print_help()
         return 0
 
-    handler = HANDLERS.get(args.command)
-    if handler is None:
-        print_error(f"ОШИБКА: команда \"{args.command}\" ещё не реализована")
-        return 1
-
     # 2. Обработка команды: получение данных, проверка, расчёт, вывод
     try:
-        return handler(args)
+        return HANDLERS[args.command](args)
     except (ValueError, OSError) as error:
         print_error(f"ОШИБКА: {error}")
         return 1

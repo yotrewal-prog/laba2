@@ -77,6 +77,7 @@ def build_parser():
     series_parser.add_argument(
         "--func",
         choices=sorted(series.FORMULAS),
+        required=True,
         help="имя суммируемого ряда: " + ", ".join(sorted(series.FORMULAS)),
     )
     series_group = series_parser.add_mutually_exclusive_group(required=True)
@@ -96,6 +97,7 @@ def build_parser():
     integrate_parser.add_argument(
         "--func",
         choices=sorted(integration.FUNCTIONS),
+        required=True,
         help="имя подынтегральной функции: " + ", ".join(sorted(integration.FUNCTIONS)),
     )
     integrate_parser.add_argument(
