@@ -12,7 +12,7 @@
 
 import sys
 
-from calc import equation, series, stats
+from calc import equation, integration, series, stats
 from cli import build_parser
 
 
@@ -152,11 +152,30 @@ def handle_series(args):
     return 0
 
 
+def handle_integrate(args):
+    """Обработчик команды integrate.
+
+    Проверяет параметры, вычисляет интеграл и печатает формулу функции
+    и значение интеграла. Формула печатается после проверки параметров:
+    сообщение об ошибке выводится прежде любого результата.
+    Возвращает код завершения: 0 — расчёт выполнен, 1 — ошибка в данных.
+    """
+    function, formula, low, high, strict = integration.FUNCTIONS[args.func]
+    integration.validate_limits(args.start, args.stop, low, high, strict)
+    integration.validate_steps(args.steps)
+    value = integration.left_rectangles(function, args.start, args.stop, args.steps)
+
+    print(formula)
+    print(f"Значение интеграла: {value:.{integration.DIGITS}f}")
+    return 0
+
+
 # Обработчики команд: добавление новой команды не изменяет остальные
 HANDLERS = {
     "solve": handle_solve,
     "stats": handle_stats,
     "series": handle_series,
+    "integrate": handle_integrate,
 }
 
 

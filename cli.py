@@ -8,7 +8,7 @@
 
 import argparse
 
-from calc import series
+from calc import integration, series
 
 
 def build_parser():
@@ -93,7 +93,11 @@ def build_parser():
         ),
         allow_abbrev=False,
     )
-    integrate_parser.add_argument("--func", help="имя подынтегральной функции")
+    integrate_parser.add_argument(
+        "--func",
+        choices=sorted(integration.FUNCTIONS),
+        help="имя подынтегральной функции: " + ", ".join(sorted(integration.FUNCTIONS)),
+    )
     integrate_parser.add_argument(
         "--from", dest="start", type=float, required=True, help="нижний предел интегрирования"
     )
