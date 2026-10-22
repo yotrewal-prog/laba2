@@ -12,7 +12,7 @@
 
 import sys
 
-from calc import equation
+from calc import equation, stats
 from cli import build_parser
 
 
@@ -78,9 +78,62 @@ def handle_solve(args):
     return 0
 
 
+def parse_numbers(source):
+    """Преобразует строки источника в список чисел.
+
+    source — поток с текстом (файл или стандартный ввод).
+    При нечисловом слове возбуждает исключение ValueError.
+    """
+    values = []
+    for line in source:
+        for word in line.split():
+            try:
+                value = float(word)
+            except ValueError:
+                raise ValueError(f"{word} не является числом") from None
+            values.append(value)
+    return values
+
+
+def read_numbers(path):
+    """Читает числа из файла path или из стандартного ввода.
+
+    Возвращает список чисел. Файл открывается на время чтения и закрывается
+    сам; стандартный ввод не открывается и не закрывается.
+    """
+    if path is None:
+        return parse_numbers(sys.stdin)
+    try:
+        with open(path, encoding="utf-8-sig") as handle:
+            return parse_numbers(handle)
+    except OSError:
+        raise ValueError("файл не открывается") from None
+
+
+def handle_stats(args):
+    """Обработчик команды stats.
+
+    Читает числа, проверяет их, вычисляет показатели и печатает их.
+    Возвращает код завершения: 0 — расчёт выполнен, 1 — ошибка в данных.
+    """
+    values = read_numbers(args.input)
+    stats.validate_values(values)
+
+    # Вывод показателей: цикл ничего не знает о показателях,
+    # он знает только, что у каждого есть подпись, функция и формат
+    for label, function, form in stats.REPORT:
+        value = function(values)
+        if value is None:
+            print(f"{label}: НЕ СУЩЕСТВУЕТ")
+        else:
+            print(f"{label}: {value:{form}}")
+    return 0
+
+
 # Обработчики команд: добавление новой команды не изменяет остальные
 HANDLERS = {
     "solve": handle_solve,
+    "stats": handle_stats,
 }
 
 
