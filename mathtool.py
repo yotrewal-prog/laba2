@@ -12,7 +12,7 @@
 
 import sys
 
-from calc import equation, stats
+from calc import equation, series, stats
 from cli import build_parser
 
 
@@ -130,10 +130,33 @@ def handle_stats(args):
     return 0
 
 
+def handle_series(args):
+    """Обработчик команды series.
+
+    Проверяет параметры, вычисляет сумму ряда и печатает формулу, число
+    слагаемых и саму сумму. Формула печатается после проверки параметров:
+    сообщение об ошибке выводится прежде любого результата.
+    Возвращает код завершения: 0 — расчёт выполнен, 1 — ошибка в данных.
+    """
+    term, formula = series.FORMULAS[args.func]
+    if args.terms is not None:
+        series.validate_terms(args.terms)
+        total, count = series.sum_by_terms(term, args.terms)
+    else:
+        series.validate_eps(args.eps)
+        total, count = series.sum_by_eps(term, args.eps)
+
+    print(formula)
+    print(f"Слагаемых: {count}")
+    print(f"Сумма ряда: {total:.{series.DIGITS}f}")
+    return 0
+
+
 # Обработчики команд: добавление новой команды не изменяет остальные
 HANDLERS = {
     "solve": handle_solve,
     "stats": handle_stats,
+    "series": handle_series,
 }
 
 

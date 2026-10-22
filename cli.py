@@ -8,6 +8,8 @@
 
 import argparse
 
+from calc import series
+
 
 def build_parser():
     """Создаёт разборщик параметров командной строки и возвращает его.
@@ -72,7 +74,11 @@ def build_parser():
         ),
         allow_abbrev=False,
     )
-    series_parser.add_argument("--func", help="имя суммируемого ряда")
+    series_parser.add_argument(
+        "--func",
+        choices=sorted(series.FORMULAS),
+        help="имя суммируемого ряда: " + ", ".join(sorted(series.FORMULAS)),
+    )
     series_group = series_parser.add_mutually_exclusive_group(required=True)
     series_group.add_argument("--terms", type=int, help="число слагаемых: от 1 до 10000")
     series_group.add_argument("--eps", type=float, help="точность: больше нуля и не грубее 0.0001")
