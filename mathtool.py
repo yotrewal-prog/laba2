@@ -15,7 +15,6 @@ import sys
 from calc import equation, integration, series, stats
 from cli import build_parser
 
-
 def print_error(message):
     """Выводит сообщение об ошибке в стандартный поток ошибок."""
     print(message, file=sys.stderr)
