@@ -12,11 +12,7 @@ from calc import integration, series
 
 
 def build_parser():
-    """Создаёт разборщик параметров командной строки и возвращает его.
 
-    Разборщик объявляет все четыре команды приложения: их параметры
-    заданы в постановке задачи и входят в общую справку.
-    """
     parser = argparse.ArgumentParser(
         prog="mathtool",
         description=(
@@ -26,8 +22,7 @@ def build_parser():
     )
     subparsers = parser.add_subparsers(dest="command")
 
-    # Команда solve: коэффициенты уравнения задаются параметрами
-    # либо, если они не указаны, запрашиваются с клавиатуры
+
     solve_parser = subparsers.add_parser(
         "solve",
         help="решение уравнения A*x^2 + B*x + C = 0",

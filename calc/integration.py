@@ -7,10 +7,8 @@
 
 import math
 
-# Наибольшее значение параметра --steps
+
 MAX_STEPS = 100000
-# Число знаков после запятой в выводе значения интеграла:
-# разрядность вывода та же, что и у суммы ряда
 DIGITS = 4
 
 
@@ -59,10 +57,7 @@ FUNCTIONS = {
 
 
 def validate_limits(start, stop, low, high, strict):
-    """Проверяет пределы интегрирования и их принадлежность промежутку.
 
-    При нарушении ограничения возбуждает исключение ValueError.
-    """
     if not math.isfinite(start) or not math.isfinite(stop):
         raise ValueError("предел не является конечным числом")
     if start >= stop:
@@ -76,17 +71,12 @@ def validate_limits(start, stop, low, high, strict):
 
 
 def validate_steps(steps):
-    """Проверяет число шагов на соответствие допустимому диапазону."""
     if not 1 <= steps <= MAX_STEPS:
         raise ValueError("количество шагов вне диапазона")
 
 
 def left_rectangles(function, start, stop, steps):
-    """Вычисляет интеграл методом левых прямоугольников.
 
-    function — подынтегральная функция, start и stop — пределы
-    интегрирования, steps — число прямоугольников.
-    """
     dx = (stop - start) / steps
     result = 0.0
     for i in range(steps):

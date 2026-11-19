@@ -122,7 +122,6 @@ def handle_integrate(args):
     return 0
 
 
-# Обработчики команд: добавление новой команды не изменяет остальные
 HANDLERS = {
     "solve": handle_solve,
     "stats": handle_stats,
